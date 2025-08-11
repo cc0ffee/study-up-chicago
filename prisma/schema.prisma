@@ -74,6 +74,13 @@ enum SeatingLevels {
   plentiful
 }
 
+enum BusyLevels {
+  quiet
+  moderate
+  packed
+}
+
+
 model Place {
   id            String      @id @default(cuid())
   name          String
@@ -83,7 +90,8 @@ model Place {
   lng           Float
   hasOutlets    Boolean?
   hasWifi       Boolean?
-  seatingLevel  SeatingLevels
+  seatingLevel  SeatingLevels?
+  busyLevel     BusyLevels?
   noiseLevel    Int?        
   images        String[]    @default([])
 
