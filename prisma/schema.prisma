@@ -85,6 +85,7 @@ model Place {
   id            String      @id @default(cuid())
   name          String
   description   String?
+  link          String?
   placeType     PlaceType
   lat           Float
   lng           Float
