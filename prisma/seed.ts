@@ -3,7 +3,20 @@ import fs from 'fs';
 
 const prisma = new PrismaClient()
 
+const parsedPlaces = JSON.parse(fs.readFileSync('./data/locations.geojson', 'utf-8'));
 const parsedLibraries = JSON.parse(fs.readFileSync('./data/CPL.json', 'utf-8'));
+
+
+const places = parsedPlaces.features.map((feature: any) => {
+    const [longitude, latitude] = feature.geometry.coordinates;
+
+    return {
+        name: feature.properties.Name,
+        lat: latitude,
+        lng: longitude,
+        placeType: 'cafe'
+    }
+});
 
 const libraries = parsedLibraries.map((lib: any) => {
   const [latitude, longitude] = lib.LOCATION
@@ -21,10 +34,10 @@ const libraries = parsedLibraries.map((lib: any) => {
   }
 });
 
+const combinedPlaces = [...places, ...libraries]
+
 async function main() {
-    for (const l of libraries) {
-      console.log('Seeding location:', l.name);
-      console.log(JSON.stringify(l, null, 2));
+    for (const l of combinedPlaces) {
         await prisma.place.create({
             data: l
         })
