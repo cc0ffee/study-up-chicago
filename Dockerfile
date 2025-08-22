@@ -3,9 +3,9 @@ LABEL authors="smblackwll"
 
 FROM node:lts-alpine
 
-run npm install
+RUN npm install
 
-
+RUN npx prisma generate
 
 EXPOSE 3000
 
