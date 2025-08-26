@@ -1,7 +1,7 @@
-FROM ubuntu:latest
+FROM node:lts-alpine
+
 LABEL authors="smblackwll"
 
-FROM node:lts-alpine
 
 WORKDIR /usr/src/app
 
@@ -17,4 +17,3 @@ EXPOSE 3000
 
 CMD ["npm", "run", "dev"]
 
-ENTRYPOINT ["top", "-b"]
