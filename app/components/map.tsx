@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useRef, useState } from 'react';
-import Map, { MapRef, NavigationControl, Marker } from 'react-map-gl/mapbox';
+import Map, { MapRef, NavigationControl, Popup, Marker } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 enum PlaceType {
@@ -20,6 +20,11 @@ type Location = {
 
 export default function MapComponent() {
     const [locations, setLocations] = useState<Location[]>([]);
+    const [popUpInfo, setPopUpInfo] = useState<Location | null>();
+
+    function handleMarkerHover(l: Location | null) {
+        setPopUpInfo(l);
+    }
 
     const mapContainer = useRef(null);
     const mapRef = useRef<MapRef>(null);
@@ -63,18 +68,36 @@ export default function MapComponent() {
                         key={l.id} 
                         latitude={l.lat} 
                         longitude={l.lng} 
-                        anchor="bottom">
-                            <img width={20} height={20}   src={(() => {
-                                switch(l.placeType) {
-                                    case PlaceType.cafe: return './coffee.svg';
-                                    case PlaceType.library: return './library.svg';
-                                    case PlaceType.campus: return './campus.svg';
-                                    case PlaceType.other: return './other.svg';
-                                default: return './other.svg';
-                                }
-                            })()}/>
+                        anchor="bottom"
+                        >
+                            <div onMouseEnter={() => handleMarkerHover(l)} onMouseLeave={() => handleMarkerHover(null)}>
+                                <img width={20} height={20}   src={(() => {
+                                    switch(l.placeType) {
+                                        case PlaceType.cafe: return './coffee.svg';
+                                        case PlaceType.library: return './library.svg';
+                                        case PlaceType.campus: return './campus.svg';
+                                        case PlaceType.other: return './other.svg';
+                                    default: return './other.svg';
+                                    }
+                                })()}/>
+                            </div>
+                        
                     </Marker>
                 ))}
+
+                {popUpInfo && (
+                    <Popup
+                    anchor='top'
+                    longitude={popUpInfo.lng}
+                    latitude={popUpInfo.lat}
+                    onClose={() => setPopUpInfo(null)}
+                    >
+                        <div className="text-black p-2">
+                            {popUpInfo.name}
+                        </div>
+                    </Popup>
+                )}
+
                 <NavigationControl showCompass={false}/>
             </Map>
         </div>
