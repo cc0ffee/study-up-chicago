@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useRef, useState } from 'react';
-import Map, { MapRef, NavigationControl, Marker } from 'react-map-gl/mapbox';
+import Map, { MapRef, NavigationControl, Marker, Popup } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 enum PlaceType {
@@ -20,6 +20,7 @@ type Location = {
 
 export default function MapComponent() {
     const [locations, setLocations] = useState<Location[]>([]);
+    const [hovered, setHovered] = useState<number | null>(null);
 
     const mapContainer = useRef(null);
     const mapRef = useRef<MapRef>(null);
@@ -64,7 +65,8 @@ export default function MapComponent() {
                         latitude={l.lat} 
                         longitude={l.lng} 
                         anchor="bottom">
-                            <img width={20} height={20}   src={(() => {
+                            <img width={20} height={20} onMouseEnter={() => setHovered(l.id)}
+                            onMouseLeave={() => setHovered(null)}  src={(() => {
                                 switch(l.placeType) {
                                     case PlaceType.cafe: return './coffee.svg';
                                     case PlaceType.library: return './library.svg';
@@ -73,6 +75,11 @@ export default function MapComponent() {
                                 default: return './other.svg';
                                 }
                             })()}/>
+                            {hovered === l.id && (
+                                <Popup latitude={l.lat} longitude={l.lng} closeButton={false} closeOnClick={false} offset={25}>
+                                    <div className="text-black">{l.name}</div>
+                                </Popup>
+                            )}
                     </Marker>
                 ))}
                 <NavigationControl showCompass={false}/>
